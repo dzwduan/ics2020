@@ -1,5 +1,5 @@
-STUID = 191220000
-STUNAME = 张三
+STUID = dzwduan
+STUNAME = dzwduan@gmail.com
 
 # DO NOT modify the following code!!!
 
@@ -12,3 +12,4 @@ define git_commit
 #	-@(echo "> $(1)" && echo $(STUID) && hostnamectl && uptime) | git commit -F - $(GITFLAGS)
 #	-@sync
 endef
+
