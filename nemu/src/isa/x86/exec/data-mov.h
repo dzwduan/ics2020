@@ -4,17 +4,23 @@ static inline def_EHelper(mov) {
 }
 
 static inline def_EHelper(push) {
-  TODO();
+  rtl_push(s,ddest);
   print_asm_template1(push);
 }
 
+static inline def_EHelper(push_imm8) {
+  rtl_sext(s,s0,ddest,1);
+  rtl_push(s,s0);
+  print_asm("push_imm8");
+}
+
 static inline def_EHelper(pop) {
-  TODO();
+  rtl_pop(s,ddest);
   print_asm_template1(pop);
 }
 
 static inline def_EHelper(pusha) {
-  TODO();
+
   print_asm("pusha");
 }
 
@@ -24,7 +30,14 @@ static inline def_EHelper(popa) {
 }
 
 static inline def_EHelper(leave) {
-  TODO();
+  //printf("when in leave pc : 0x%x\n\n",s->seq);
+  if(s->isa.is_operand_size_16){
+    cpu.sp = cpu.bp;
+    rtl_pop(s,(rtlreg_t*)&cpu.bp);
+  }else{
+    cpu.esp = cpu.ebp;
+    rtl_pop(s,&cpu.ebp);
+  }
   print_asm("leave");
 }
 

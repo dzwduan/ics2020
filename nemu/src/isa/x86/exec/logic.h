@@ -6,17 +6,28 @@ static inline def_EHelper(test) {
 }
 
 static inline def_EHelper(and) {
-  TODO();
+  //printf("before and esp is %d\n",cpu.esp);
+  cpu.CF = cpu.OF = 0;
+  *s0 = *ddest & *dsrc1;
+  rtl_update_ZFSF(s,s0,id_dest->width);
+  operand_write(s,id_dest,s0);
+  //printf("after and esp is %d\n",cpu.esp);
   print_asm_template2(and);
 }
 
 static inline def_EHelper(xor) {
-  TODO();
+  cpu.CF = cpu.OF = 0;
+  *s0 = *ddest ^ *dsrc1;
+  rtl_update_ZFSF(s,s0,id_dest->width);
+  operand_write(s,id_dest,s0);
   print_asm_template2(xor);
 }
 
 static inline def_EHelper(or) {
-  TODO();
+  cpu.CF = cpu.OF = 0;
+  *s0 = *ddest | *dsrc1;
+  rtl_update_ZFSF(s,s0,id_dest->width);
+  operand_write(s,id_dest,s0);
   print_asm_template2(or);
 }
 

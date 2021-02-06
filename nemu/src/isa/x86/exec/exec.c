@@ -16,12 +16,14 @@ static inline void set_width(DecodeExecState *s, int width)
 /* 0x80, 0x81, 0x83 */
 static inline def_EHelper(gp1)
 {
+  printf(" %d\n", s->isa.ext_opcode);
   switch (s->isa.ext_opcode)
   {
-    EMPTY(0)
+    EXW(0,add,id_dest->width)
     EMPTY(1)
-    EMPTY(2) EMPTY(3)
-        EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
+    EMPTY(2)
+    EMPTY(3)
+        EXW(4, and, id_dest->width) EXW(5, sub, id_dest->width) EMPTY(6) EXW(7, cmp, id_dest->width)
   }
 }
 
@@ -32,7 +34,8 @@ static inline def_EHelper(gp2)
   {
     EMPTY(0)
     EMPTY(1)
-    EMPTY(2) EMPTY(3)
+    EMPTY(2)
+    EMPTY(3)
         EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
   }
 }
@@ -44,7 +47,8 @@ static inline def_EHelper(gp3)
   {
     EMPTY(0)
     EMPTY(1)
-    EMPTY(2) EMPTY(3)
+    EMPTY(2)
+    EMPTY(3)
         EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
   }
 }
@@ -56,7 +60,8 @@ static inline def_EHelper(gp4)
   {
     EMPTY(0)
     EMPTY(1)
-    EMPTY(2) EMPTY(3)
+    EMPTY(2)
+    EMPTY(3)
         EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
   }
 }
@@ -68,8 +73,9 @@ static inline def_EHelper(gp5)
   {
     EMPTY(0)
     EMPTY(1)
-    EMPTY(2) EMPTY(3)
-        EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
+    EMPTY(2)
+    EMPTY(3)
+        EMPTY(4) EMPTY(5) EX(6,push) EMPTY(7)
   }
 }
 
@@ -80,7 +86,8 @@ static inline def_EHelper(gp7)
   {
     EMPTY(0)
     EMPTY(1)
-    EMPTY(2) EMPTY(3)
+    EMPTY(2)
+    EMPTY(3)
         EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
   }
 }
@@ -93,6 +100,8 @@ static inline def_EHelper(2byte_esc)
   {
     /* TODO: Add more instructions!!! */
     IDEX(0x01, gp7_E, gp7)
+    IDEXW(0x94,setcc_E,setcc,1)
+    IDEXW(0xb6,mov_E2G,movzx,1)
   default:
     exec_inv(s);
   }
@@ -104,12 +113,12 @@ static inline void fetch_decode_exec(DecodeExecState *s)
 again:
   opcode = instr_fetch(&s->seq_pc, 1);
   s->opcode = opcode;
+  printf("exec opcode 0x%x #### cpu.esp : %d\n", opcode, cpu.esp);
   switch (opcode)
   {
     EX(0x0f, 2byte_esc)
-    IDEXW(0x80, I2E, gp1, 1)
+
     IDEX(0x81, I2E, gp1)
-    IDEX(0x83, SI2E, gp1)
     IDEXW(0x88, mov_G2E, mov, 1)
     IDEX(0x89, mov_G2E, mov)
     IDEXW(0x8a, mov_E2G, mov, 1)
@@ -151,8 +160,34 @@ again:
     //add-longlong
     IDEX(0xe8, J, call)
     EX(0x90, nop)
-    IDEX(0x55,push_r,push)
-
+    IDEX(0x55, push_r, push)
+    IDEX(0x83, SI2E, gp1)
+    IDEXW(0x80, I2E, gp1, 1)
+    IDEXW(0x74, J, jcc, 1);
+    EX(0xc9, leave)
+    EX(0xc3, ret)
+    IDEX(0x68, push_I, push)
+    IDEX(0x8d, lea_M2G, lea)
+    IDEX(0x57,push_r,push)
+    IDEX(0x56,push_r,push)
+    IDEX(0x53,push_r,push)
+    IDEX(0x51,push_r,push)
+    IDEX(0x31,G2E,xor)
+    IDEX(0x03,E2G,add)
+    IDEX(0x13,E2G,adc)
+    IDEX(0x09,G2E,or)
+    IDEX(0x50,push_r,push)
+    IDEX(0x43,r,inc)
+    IDEXW(0x75,J,jcc,1)
+    IDEX(0x58,r,pop)
+    IDEX(0x59,r,pop)
+    IDEX(0x5a,r,pop)
+    IDEX(0x5b,r,pop)
+    IDEX(0x5c,r,pop)
+    IDEX(0x5d,r,pop)
+    IDEX(0x5e,r,pop)
+    IDEX(0x5f,r,pop)
+    
   case 0x66:
     s->isa.is_operand_size_16 = true;
     goto again;
