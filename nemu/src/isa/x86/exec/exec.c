@@ -23,7 +23,7 @@ static inline def_EHelper(gp1)
     EMPTY(1)
     EMPTY(2)
     EMPTY(3)
-        EXW(4, and, id_dest->width) EXW(5, sub, id_dest->width) EMPTY(6) EXW(7, cmp, id_dest->width)
+        EXW(4, and, id_dest->width) EXW(5, sub, id_dest->width) EXW(6, xor, id_dest->width) EXW(7, cmp, id_dest->width)
   }
 }
 
@@ -36,7 +36,7 @@ static inline def_EHelper(gp2)
     EMPTY(1)
     EMPTY(2)
     EMPTY(3)
-        EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
+        EX(4,shl) EXW(5,shr,id_dest->width) EMPTY(6) EX(7,sar)
   }
 }
 
@@ -45,11 +45,11 @@ static inline def_EHelper(gp3)
 {
   switch (s->isa.ext_opcode)
   {
-    EMPTY(0)
+    IDEXW(0,test_I,test,id_dest->width)
     EMPTY(1)
-    EMPTY(2)
-    EMPTY(3)
-        EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
+    EX(2,not)
+    EX(3,neg)
+        EX(4,mul) EX(5,imul1) EX(6,div) EX(7,idiv)
   }
 }
 
@@ -100,7 +100,22 @@ static inline def_EHelper(2byte_esc)
   {
     /* TODO: Add more instructions!!! */
     IDEX(0x01, gp7_E, gp7)
+    IDEXW(0x90,setcc_E,setcc,1)
+    IDEXW(0x91,setcc_E,setcc,1)
+    IDEXW(0x92,setcc_E,setcc,1)
+    IDEXW(0x93,setcc_E,setcc,1)
     IDEXW(0x94,setcc_E,setcc,1)
+    IDEXW(0x95,setcc_E,setcc,1)
+    IDEXW(0x96,setcc_E,setcc,1)
+    IDEXW(0x97,setcc_E,setcc,1)
+    IDEXW(0x98,setcc_E,setcc,1)
+    IDEXW(0x99,setcc_E,setcc,1)
+    IDEXW(0x9a,setcc_E,setcc,1)
+    IDEXW(0x9b,setcc_E,setcc,1)
+    IDEXW(0x9c,setcc_E,setcc,1)
+    IDEXW(0x9d,setcc_E,setcc,1)
+    IDEXW(0x9e,setcc_E,setcc,1)
+    IDEXW(0x9f,setcc_E,setcc,1)
     IDEXW(0xb6,mov_E2G,movzx,1)
   default:
     exec_inv(s);
@@ -143,14 +158,13 @@ again:
     IDEX(0xbd, mov_I2r, mov)
     IDEX(0xbe, mov_I2r, mov)
     IDEX(0xbf, mov_I2r, mov)
-    IDEXW(0xc0, gp2_Ib2E, gp2, 1)
-    IDEX(0xc1, gp2_Ib2E, gp2)
+    // IDEXW(0xc0, gp2_Ib2E, gp2, 1)
+    // IDEX(0xc1, gp2_Ib2E, gp2)
     IDEXW(0xc6, mov_I2E, mov, 1)
     IDEX(0xc7, mov_I2E, mov)
     IDEXW(0xd0, gp2_1_E, gp2, 1)
     IDEX(0xd1, gp2_1_E, gp2)
-    IDEXW(0xd2, gp2_cl2E, gp2, 1)
-    IDEX(0xd3, gp2_cl2E, gp2)
+
     EX(0xd6, nemu_trap)
     IDEXW(0xf6, E, gp3, 1)
     IDEX(0xf7, E, gp3)
@@ -162,7 +176,7 @@ again:
     EX(0x90, nop)
     IDEX(0x83, SI2E, gp1)
     IDEXW(0x80, I2E, gp1, 1)
-    IDEXW(0x74, J, jcc, 1);
+    //IDEXW(0x74, J, jcc, 1);
     EX(0xc9, leave)
     EX(0xc3, ret)
     IDEX(0x68, push_I, push)
@@ -177,10 +191,10 @@ again:
     IDEX(0x31,G2E,xor)
     IDEX(0x03,E2G,add)
     IDEX(0x13,E2G,adc)
-    IDEX(0x09,G2E,or)
+    //IDEX(0x09,G2E,or)
     IDEX(0x50,push_r,push)
     //IDEX(0x43,r,inc)
-    IDEXW(0x75,J,jcc,1)
+    // IDEXW(0x75,J,jcc,1)
     IDEX(0x58,r,pop)
     IDEX(0x59,r,pop)
     IDEX(0x5a,r,pop)
@@ -219,6 +233,44 @@ again:
     IDEX(0x4e,r,inc)
     IDEX(0x4f,r,inc)
     IDEXW(0x6a,push_I,push_imm8, 1)
+
+    //bit
+    IDEXW(0xc0,gp2_Ib2E,gp2,1)
+    IDEX(0xc1,gp2_Ib2E, gp2)
+    IDEXW(0xd2, gp2_cl2E, gp2, 1)
+    IDEX(0xd3, gp2_cl2E, gp2)
+    IDEXW(0x84,G2E,test,1)
+    IDEX(0x85,G2E, test)
+    IDEXW(0x70,J,jcc,1)
+    IDEXW(0x71,J,jcc,1)
+    IDEXW(0x72,J,jcc,1)
+    IDEXW(0x73,J,jcc,1)
+    IDEXW(0x74,J,jcc,1)
+    IDEXW(0x75,J,jcc,1)
+    IDEXW(0x76,J,jcc,1)
+    IDEXW(0x77,J,jcc,1)
+    IDEXW(0x78,J,jcc,1)
+    IDEXW(0x79,J,jcc,1)
+    IDEXW(0x7a,J,jcc,1)
+    IDEXW(0x7b,J,jcc,1)
+    IDEXW(0x7c,J,jcc,1)
+    IDEXW(0x7d,J,jcc,1)
+    IDEXW(0x7e,J,jcc,1)
+    IDEXW(0x7f,J,jcc,1)
+    IDEXW(0x08,G2E,or,1)
+    IDEX(0x09,G2E,or)
+    IDEXW(0x0a,E2G,or,1)
+    IDEX(0x0b,E2G,or)
+    IDEXW(0x0c,I2a,or,1)
+    IDEX(0x0d,I2a,or)
+    IDEXW(0x20,G2E,and,1)
+    IDEX(0x21,G2E,and)
+    IDEXW(0x22,E2G,and,1)
+    IDEX(0x23,E2G,and)
+    IDEXW(0x24,I2a,and,1)
+    IDEX(0x25,I2a,and)
+
+
   case 0x66:
     s->isa.is_operand_size_16 = true;
     goto again;
