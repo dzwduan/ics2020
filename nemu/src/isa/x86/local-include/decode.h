@@ -54,7 +54,9 @@ static inline def_DopHelper(SI) {
    *
    operand_imm(s, op, load_val, ???, op->width);
    */
-  TODO();
+  word_t imm = instr_fetch(&s->seq_pc, op->width);
+  if(op->width==1 && (imm>>7 & 1)) imm |= 0xFFFFFF00; //注意8位有符号数前面的符号
+  operand_imm(s,op,load_val,imm,op->width);
 }
 
 /* I386 manual does not contain this abbreviation.
